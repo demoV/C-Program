@@ -177,7 +177,28 @@ void find_index_of_gives_index_for_unsigned_char_array(){
 
 	assert(index == 2);
 };
+int isLessThan_for_test(void* hint, void* item) {
+	int *h = (int*)hint;
+	int *i = (int *)item;
 
+	if(*h > *i)
+		return 1;
+	return 0;
+}
+void findFirst_can_find(){
+	ArrayUtil a = create(sizeof(int), 3);
+	int *first = (int*)a.base;
+
+	first[0] = 23;
+	first[1] = 24;
+	first[2] = 13;
+
+	int hint = 20;
+	MatchFunc *func = &isLessThan_for_test;
+	int *foundValue = findFirst(a, func, &hint);
+
+	assert(*foundValue == 13);
+}
 int main(int argc, char const *argv[]) {
 	create_array();
 	resize_array();
@@ -190,5 +211,6 @@ int main(int argc, char const *argv[]) {
 	find_index_of_gives_index_minus1_if_element_not_present();
 	find_index_of_gives_index_for_double_array();
 	find_index_of_gives_index_for_unsigned_char_array();
+	findFirst_can_find();
 	return 0;
 }
