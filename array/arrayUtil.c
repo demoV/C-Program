@@ -4,6 +4,7 @@
 #include <string.h>
 
 ArrayUtil create(int sizeType, int length) {
+	
 	void * base_address = calloc(length, sizeType);
 	ArrayUtil array;
 	array.base = base_address;
@@ -60,7 +61,53 @@ void* findLast(ArrayUtil util, MatchFunc* match, void* hint) {
 	}
 	return NULL;
 };
+int count(ArrayUtil util, MatchFunc* match, void* hint) {
+	int counter = 0;
+	void *base = util.base;
+	for (int i = 0; i < util.length; ++i){
+		if(match(hint, base))
+			counter ++;
+		base = base + util.type_size;
+	}
+	return counter;
+};
 
 
+int filter(ArrayUtil util, MatchFunc* match, void* hint, void** destination, int maxItems ){
+	void * base = util.base;
+	int length = 0;
+	for (int i = 0; i < util.length; ++i){
+		if(match(hint, base) && maxItems > length){
+			destination[length++] = base;
+		}
+		base = base + util.type_size;
+	}
+	return length;
+};
 
+void map(ArrayUtil source, ArrayUtil destination, ConvertFunc* convert, void* hint) {
+	void * base = source.base;
+	void * destBase = destination.base;
+	int length = 0;
+	for (int i = 0; i < source.length; ++i){
+		convert(hint, base, destBase);
+		base = base + source.type_size;
+		destBase = destBase + destination.type_size;
+	}
+};
 
+void forEach(ArrayUtil util, OperationFunc* operation, void* hint) {
+	void * base = util.base;
+	for (int i = 0; i < util.length; ++i){
+		operation(hint, base);
+		base = base + util.type_size;
+	}
+};
+void* reduce(ArrayUtil util, ReducerFunc* reducer, void* hint, void* intialValue){
+	void * base = util.base;
+	for (int i = 0; i < util.length; ++i){
+		reducer(hint, intialValue, base);
+		base = base + util.type_size;
+	}	
+	return intialValue;
+};
